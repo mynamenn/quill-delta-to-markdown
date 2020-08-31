@@ -1,11 +1,9 @@
-const isObject = require('lodash/isObject');
-const isArray = require('lodash/isArray');
-const trimEnd = require('lodash/trimEnd');
-const defaultConverters = require('./fromDelta.converters');
-const Node = require('./utils/Node');
+const isObject = require("./utils/isObject");
+const defaultConverters = require("./fromDelta.converters");
+const Node = require("./utils/Node");
 
-exports = module.exports = function(ops, converters = defaultConverters) {
-  return trimEnd(convert(ops, converters).render()) + '\n';
+exports = module.exports = function (ops, converters = defaultConverters) {
+  return convert(ops, converters).render().trimEnd() + "\n";
 };
 
 function convert(ops, converters) {
@@ -13,7 +11,7 @@ function convert(ops, converters) {
   var root = new Node();
 
   function newLine() {
-    el = line = new Node(['', '\n']);
+    el = line = new Node(["", "\n"]);
     root.append(line);
     activeInline = {};
   }
@@ -30,7 +28,7 @@ function convert(ops, converters) {
         }
       }
     } else {
-      var lines = op.insert.split('\n');
+      var lines = op.insert.split("\n");
 
       if (hasBlockLevelAttribute(op.attributes, converters)) {
         // Some line-level styling (ie headings) is applied by inserting a \n
@@ -41,7 +39,7 @@ function convert(ops, converters) {
           for (var attr in op.attributes) {
             if (converters.block[attr]) {
               var fn = converters.block[attr];
-              if (typeof fn === 'object') {
+              if (typeof fn === "object") {
                 if (group && group.type !== attr) {
                   group = null;
                 }
@@ -64,7 +62,7 @@ function convert(ops, converters) {
 
               fn.call(line, op.attributes, group);
               newLine();
-              break
+              break;
             }
           }
         }
@@ -74,7 +72,10 @@ function convert(ops, converters) {
           if ((l > 0 || beginningOfLine) && group && ++group.distance >= 2) {
             group = null;
           }
-          applyInlineAttributes(op.attributes, ops[i + 1] && ops[i + 1].attributes);
+          applyInlineAttributes(
+            op.attributes,
+            ops[i + 1] && ops[i + 1].attributes
+          );
           el.append(lines[l]);
           if (l < lines.length - 1) {
             newLine();
@@ -98,12 +99,12 @@ function convert(ops, converters) {
       seen[tag._format] = true;
       if (!attrs[tag._format]) {
         for (var k in seen) {
-          delete activeInline[k]
+          delete activeInline[k];
         }
-        el = tag.parent()
+        el = tag.parent();
       }
 
-      tag = tag.parent()
+      tag = tag.parent();
     }
 
     for (var attr in attrs) {
@@ -128,7 +129,7 @@ function convert(ops, converters) {
 
     function apply(fmt) {
       var newEl = converters.inline[fmt].call(null, attrs[fmt]);
-      if (isArray(newEl)) {
+      if (Array.isArray(newEl)) {
         newEl = new Node(newEl);
       }
       newEl._format = fmt;
@@ -141,8 +142,8 @@ function convert(ops, converters) {
 function hasBlockLevelAttribute(attrs, converters) {
   for (var k in attrs) {
     if (Object.keys(converters.block).includes(k)) {
-      return true
+      return true;
     }
   }
-  return false
+  return false;
 }
