@@ -1,64 +1,74 @@
-const Node = require('./utils/Node');
-const { encodeLink } = require('./utils/URL');
+const Node = require("./utils/Node");
+const { encodeLink } = require("./utils/URL");
 
 module.exports = {
   embed: {
     formula: function(src) {
-      this.append('$$' + src + '$$');
+      this.append("$$" + src + "$$");
     },
     image: function(src) {
-      this.append('![](' + encodeLink(src) + ')');
+      this.append("![](" + encodeLink(src) + ")");
     },
     // Not a default Quill feature, converts custom divider embed blot added when
     // creating quill editor instance.
     // See https://quilljs.com/guides/cloning-medium-with-parchment/#dividers
     thematic_break: function() {
-      this.open = '\n---\n' + this.open;
+      this.open = "\n---\n" + this.open;
     },
   },
 
   inline: {
     italic: function() {
-      return ['_', '_'];
+      return ["_", "_"];
     },
     bold: function() {
-      return ['**', '**'];
+      return ["**", "**"];
     },
     link: function(url) {
-      return ['[', '](' + url + ')'];
+      return ["[", "](" + url + ")"];
     },
     code: function() {
-      return ['`', '`'];
+      return ["`", "`"];
     },
   },
 
   block: {
-    'header': function({header}) {
-      this.open = '#'.repeat(header) + ' ' + this.open;
+    header: function({ header }) {
+      this.open = "#".repeat(header) + " " + this.open;
     },
     blockquote: function() {
-      this.open = '> ' + this.open;
+      this.open = "> " + this.open;
     },
-    'code-block': function() {
-      this.open = '```' + this.open;
+    "code-block": function() {
+      this.open = "```" + this.open;
     },
-    'list': {
+    list: {
       group: function() {
-        return new Node(['', '\n']);
+        return new Node(["", "\n"]);
       },
       line: function(attrs, group) {
-        if (attrs.list === 'bullet') {
-          this.open = '- ' + this.open;
+        let indent = "";
+
+        if (attrs.indent) {
+          indent = "    ".repeat(attrs.indent);
+          group.indent = attrs.indent;
+        } else {
+          group.indent = 0;
+        }
+
+        if (attrs.list === "bullet") {
+          this.open = indent + "- " + this.open;
         } else if (attrs.list === "checked") {
-          this.open = '- [x] ' + this.open;
+          this.open = indent + "- [x] " + this.open;
         } else if (attrs.list === "unchecked") {
-          this.open = '- [ ] ' + this.open;
-        } else if (attrs.list === 'ordered') {
-          group.count = group.count || 0;
-          var count = ++group.count;
-          this.open = count + '. ' + this.open;
+          this.open = indent + "- [ ] " + this.open;
+        } else if (attrs.list === "ordered") {
+          group.indentCounts[attrs.indent] =
+            group.indentCounts[attrs.indent] || 0;
+          let count = ++group.indentCounts[attrs.indent];
+          this.open = indent + count + ". " + this.open;
         }
       },
-    }
+    },
   },
-}
+};

@@ -2,8 +2,12 @@ const isObject = require("./utils/isObject");
 const defaultConverters = require("./fromDelta.converters");
 const Node = require("./utils/Node");
 
-exports = module.exports = function (ops, converters = defaultConverters) {
-  return convert(ops, converters).render().trimEnd() + "\n";
+exports = module.exports = function(ops, converters = defaultConverters) {
+  return (
+    convert(ops, converters)
+      .render()
+      .trimEnd() + "\n"
+  );
 };
 
 function convert(ops, converters) {
@@ -49,6 +53,8 @@ function convert(ops, converters) {
                     type: attr,
                     value: op.attributes[k],
                     distance: 0,
+                    indent: 0,
+                    indentCounts: [0],
                   };
                   root.append(group.el);
                 }
