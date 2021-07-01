@@ -3,50 +3,53 @@ const { encodeLink } = require("./utils/URL");
 
 module.exports = {
   embed: {
-    formula: function(src) {
+    formula: function (src) {
       this.append("$$" + src + "$$");
     },
-    image: function(src) {
+    image: function (src) {
       this.append("![](" + encodeLink(src) + ")");
     },
     // Not a default Quill feature, converts custom divider embed blot added when
     // creating quill editor instance.
     // See https://quilljs.com/guides/cloning-medium-with-parchment/#dividers
-    thematic_break: function() {
+    thematic_break: function () {
       this.open = "\n---\n" + this.open;
     },
   },
 
   inline: {
-    italic: function() {
+    italic: function () {
       return ["_", "_"];
     },
-    bold: function() {
+    bold: function () {
       return ["**", "**"];
     },
-    link: function(url) {
+    link: function (url) {
       return ["[", "](" + url + ")"];
     },
-    code: function() {
+    code: function () {
       return ["`", "`"];
+    },
+    strikethrough: function () {
+      return ["~~", "~~"];
     },
   },
 
   block: {
-    header: function({ header }) {
+    header: function ({ header }) {
       this.open = "#".repeat(header) + " " + this.open;
     },
-    blockquote: function() {
+    blockquote: function () {
       this.open = "> " + this.open;
     },
-    "code-block": function() {
+    "code-block": function () {
       this.open = "```" + this.open;
     },
     list: {
-      group: function() {
+      group: function () {
         return new Node(["", "\n"]);
       },
-      line: function(attrs, group) {
+      line: function (attrs, group) {
         let indent = "";
 
         if (attrs.indent) {

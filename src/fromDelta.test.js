@@ -1,6 +1,6 @@
 const render = require("./fromDelta");
 
-test("renders inline code", function() {
+test("renders inline code", function () {
   expect(
     render([
       {
@@ -16,7 +16,7 @@ test("renders inline code", function() {
   ).toEqual("`np.sqrt` is a function\n");
 });
 
-test("renders formulas", function() {
+test("renders formulas", function () {
   expect(
     render([
       {
@@ -31,7 +31,7 @@ test("renders formulas", function() {
   ).toEqual("$$1 + 1$$ is 2\n");
 });
 
-test("renders code blocks", function() {
+test("renders code blocks", function () {
   expect(
     render([
       {
@@ -52,7 +52,7 @@ test("renders code blocks", function() {
   ).toEqual("```def donothing():\n```    pass\n");
 });
 
-test("renders inline format", function() {
+test("renders inline format", function () {
   expect(
     render([
       {
@@ -68,7 +68,7 @@ test("renders inline format", function() {
   ).toEqual("Hi **mom**\n");
 });
 
-test("renders embed format", function() {
+test("renders embed format", function () {
   expect(
     render([
       {
@@ -81,7 +81,7 @@ test("renders embed format", function() {
   ).toEqual("LOOK AT THE KITTEN!\n![](https://placekitten.com/g/200/300)\n");
 });
 
-test("encodes image url", function() {
+test("encodes image url", function () {
   expect(
     render([
       {
@@ -96,7 +96,7 @@ test("encodes image url", function() {
   );
 });
 
-test("removes download params for images", function() {
+test("removes download params for images", function () {
   expect(
     render([
       {
@@ -114,7 +114,7 @@ test("removes download params for images", function() {
   );
 });
 
-test("renders block format", function() {
+test("renders block format", function () {
   expect(
     render([
       {
@@ -130,7 +130,7 @@ test("renders block format", function() {
   ).toEqual("# Headline\n");
 });
 
-test("renders lists with inline formats correctly", function() {
+test("renders lists with inline formats correctly", function () {
   expect(
     render([
       {
@@ -169,7 +169,46 @@ test("renders lists with inline formats correctly", function() {
   );
 });
 
-test("renders adjacent lists correctly", function() {
+test("renders lists with inline strikethrough correctly", function () {
+  expect(
+    render([
+      {
+        attributes: {
+          strikethrough: true,
+        },
+        insert: "Glenn v. Brumby",
+      },
+      {
+        insert: ", 663 F.3d 1312 (11th Cir. 2011)",
+      },
+      {
+        attributes: {
+          list: "ordered",
+        },
+        insert: "\n",
+      },
+      {
+        attributes: {
+          strikethrough: true,
+        },
+        insert: "Barnes v. City of Cincinnati",
+      },
+      {
+        insert: ", 401 F.3d 729 (6th Cir. 2005)",
+      },
+      {
+        attributes: {
+          list: "ordered",
+        },
+        insert: "\n",
+      },
+    ])
+  ).toEqual(
+    "1. ~~Glenn v. Brumby~~, 663 F.3d 1312 (11th Cir. 2011)\n2. ~~Barnes v. City of Cincinnati~~, 401 F.3d 729 (6th Cir. 2005)\n"
+  );
+});
+
+test("renders adjacent lists correctly", function () {
   expect(
     render([
       {
@@ -232,7 +271,7 @@ test("renders adjacent lists correctly", function() {
   );
 });
 
-test("renders adjacent inline formats correctly", function() {
+test("renders adjacent inline formats correctly", function () {
   expect(
     render([
       {
@@ -257,11 +296,40 @@ test("renders adjacent inline formats correctly", function() {
     ])
   ).toEqual(
     "_Italics! [Italic link](http://example.com)_[ regular link](http://example.com)" +
-      "\n"
+    "\n"
   );
 });
 
-test("renders checkboxes correctly", function() {
+test("renders adjacent strikethroughs inline formats correctly", function () {
+  expect(
+    render([
+      {
+        attributes: {
+          strikethrough: true,
+        },
+        insert: "Strikethroughs! ",
+      },
+      {
+        attributes: {
+          strikethrough: true,
+          link: "http://example.com",
+        },
+        insert: "Strikethrough link",
+      },
+      {
+        attributes: {
+          link: "http://example.com",
+        },
+        insert: " regular link",
+      },
+    ])
+  ).toEqual(
+    "~~Strikethroughs! [Strikethrough link](http://example.com)~~[ regular link](http://example.com)" +
+    "\n"
+  );
+});
+
+test("renders checkboxes correctly", function () {
   expect(
     render([
       {
@@ -286,7 +354,7 @@ test("renders checkboxes correctly", function() {
   ).toEqual("- [ ] milk\n- [x] cheese\n");
 });
 
-test("render an inline link", function() {
+test("render an inline link", function () {
   expect(
     render([
       {
@@ -299,7 +367,7 @@ test("render an inline link", function() {
   ).toEqual("[Go to Google](https://www.google.fr)" + "\n");
 });
 
-test("renders a separator block", function() {
+test("renders a separator block", function () {
   expect(
     render([
       {
@@ -315,7 +383,7 @@ test("renders a separator block", function() {
   ).toEqual("Before" + "\n" + "\n" + "---" + "\n" + "After" + "\n");
 });
 
-test.only("renders nested lists correctly", function() {
+test("renders nested lists correctly", function () {
   expect(
     render([
       {
